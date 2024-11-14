@@ -5,43 +5,40 @@
 # This particular configuration is intended to be used with srsUE. Note the `pdcch` parameters set in the
 # `cell_cfg` section. These are set to match the capabilities of srsUE.
 
-amf:
-  addr: 172.22.0.10
-  bind_addr: 172.17.0.1
+cu_cp:
+  amf:
+    addr: 172.22.0.10
+    bind_addr: 10.203.12.137
+    supported_tracking_areas:
+    - tac: 7
+      plmn_list:
+        - plmn: "99970"
+          tai_slice_support_list:
+            - sst: 1
+
 
 ru_sdr:
-  device_driver: uhd
-  device_args: type=b200,num_recv_frames=64,num_send_frames=64
-  sync: external
+  device_driver: uhd                                            # The RF driver name.
+  device_args: type=b200,num_recv_frames=64,num_send_frames=64  # Optionally pass arguments to the selected RF driver.
+  sync: external                                                 # Specify the sync source used by the RF. NOTE: Set to internal if NOT using an external 10 MHz reference clock. 
+  clock: external
+  srate: 23.04                                                  # RF sample rate might need to be adjusted according to selected bandwidth.
   otw_format: sc12
-  srate: 23.04
-  tx_gain: 80
-  rx_gain: 40
-  
+  tx_gain: 85                                                   # Transmit gain of the RF might need to adjusted to the given situation.
+  rx_gain: 60                                                   # Receive gain of the RF might need to adjusted to the given situation.
+
 
 cell_cfg:
-  dl_arfcn: 368500
-  band: 3
-  channel_bandwidth_MHz: 20
-  common_scs: 15
-  plmn: "00101"
-  tac: 1
-  pdcch:
-    dedicated:
-      ss2_type: common
-      dci_format_0_1_and_1_1: false
-    common:
-      ss0_index: 0
-      coreset0_index: 12
-  prach: 
-    prach_config_index: 1
-
-log:
-  filename: /tmp/gnb.log
-  all_level: info
+  dl_arfcn: 126900                                              # ARFCN of the downlink carrier (center frequency).
+  band: 71                                                      # The NR band.
+  channel_bandwidth_MHz: 20                                     # Bandwith in MHz. Number of PRBs will be automatically derived.
+  common_scs: 15                                                # Subcarrier spacing in kHz used for data.
+  plmn: "99970"                                                 # PLMN broadcasted by the gNB.
+  tac: 7                                                        # Tracking area code (needs to match the core configuration).
+  pci: 1                                                        # Physical cell ID.
 
 pcap:
-  mac_enable: disable
-  mac_filename: /tmp/gnb_mac.pcap
-  ngap_enable: disable
-  ngap_filename: /tmp/gnb_ngap.pcap
+  mac_enable: false                                             # Set to true to enable MAC-layer PCAPs.
+  mac_filename: /tmp/gnb_mac.pcap                               # Path where the MAC PCAP is stored.
+  ngap_enable: false                                            # Set to true to enable NGAP PCAPs.
+  ngap_filename: /tmp/gnb_ngap.pcap                             # Path where the NGAP PCAP is stored.
